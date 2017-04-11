@@ -1,0 +1,62 @@
+    <style>  
+    #div1 div, #div2 div{ width:200px; height:200px; border:1px #000 solid; display:none;}  
+    .active{ background:red;}  
+    #div2{
+    	margin-top:200px;
+    }
+    </style>  
+    <body>  
+    <script>  
+    window.onload = function(){  
+        var t1 = new Tab("div1");  
+        t1.init();  
+         var t2 = new Tab("div2");  
+        t2.init();  
+    }  
+      
+    function Tab(id){  
+        this.oParent = document.getElementById(id);  
+        this.aInput = this.oParent.getElementsByTagName("input");  
+        this.aDiv = this.oParent.getElementsByTagName("div");  
+        this.iNow = 0;  
+    }  
+      
+    Tab.prototype.init = function(){  
+        var that = this;  
+        for(var i=0; i<this.aInput.length;i++){  
+            this.aInput[i].index = i;  
+            this.aInput[i].onclick=function(){  
+                that.change(this);  
+            }  
+        }     
+    }  
+      
+    Tab.prototype.change = function(obj){  
+        for(var i=0; i<this.aInput.length;i++){  
+            this.aInput[i].className="";  
+            this.aDiv[i].style.display="none";  
+        }  
+        obj.className="active";  
+        this.aDiv[obj.index].style.display="block";  
+    }  
+      
+    </script>  
+    <div id="div1">  
+        <input class="active" type="button" value="1">  
+        <input type="button" value="2">  
+        <input type="button" value="3">  
+        <div style="display:block"><img src="images/a.jpg" /> </div>  
+        <div><img src="images/d.jpg"/></div>  
+        <div><img src="images/c.jpg"/></div>  
+    </div>  
+    
+     <div id="div2">  
+        <input class="active" type="button" value="1">  
+        <input type="button" value="2">  
+        <input type="button" value="3">  
+        <div style="display:block">111111 </div>  
+        <div>2222</div>  
+        <div>33333333</div>  
+    </div>  
+
+

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<style type="text/css">
+	*{
+		margin:0;
+		padding:0;
+	}
+	body{
+	background:gray}
+		#box{
+			position:relative;
+			width: 1000px;
+			height:auto;
+			border:1px solid gray;
+			margin-left:20px;
+			
+		}
+		div{
+		
+			border:1px solid white;
+			
+			padding:10px;
+			border-radius:15px;
+			height:auto;
+			
+			}
+		
+		
+	</style>
+	<script type="text/javascript" src="jquery/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript">
+		//瀑布流；
+		function WaterFall(obj){
+			this.boxId = obj.boxId;
+			this.imgBasePath =obj.imgBasePath;//放图片的文件夹名称
+			this.impExtend = obj.impExtend;//图片扩展名
+			this.imgs = obj.imgs;//所有图片路径的数组
+			this.imgWidth = obj.imgWidth;//图片宽度，固定
+			this.cols = 0;//每行放的图片个数（列数）//需要计算的
+			this.initUI();
+		}
+		
+		WaterFall.prototype.initUI=function(){					
+			for(let i=0;i<this.imgs.length;i++){
+				//1、创建div,img,span标记，
+				let divObj = $("<div></div>");
+				let spanObj = $("<span>瀑布流瀑布流瀑布流瀑布瀑布流瀑布瀑布流瀑布</span>");
+				let imgObj = $("<img src='"+this.imgBasePath+this.imgs[i]+this.impExtend+"'/>");
+				imgObj.css({"width":this.imgWidth});
+				//初始时div的left和top可以随意设置，只要不显示在界面就行
+				divObj.css({"position":"absolute","left":"-1000px","top":"-1000px","width":this.imgWidth}); 
+				//2)、append();
+				$(divObj).append(imgObj);
+				$(divObj).append(spanObj);
+				$(this.boxId).append(divObj);				
+			}
+		}
+		
+		WaterFall.prototype.setLeftTop = function(){
+			//1、要保存每一列的当前高度；初始化都为0；[200,0,0,0]
+			//.width()获取元素的宽度，值为数字，计算每行有多少列
+			let colCount = parseInt($(this.boxId).width()/this.imgWidth);
+			let colHeights=new Array(colCount);
+			//第一列的top初始值为0
+			for(let i=0;i<colHeights.length;i++){
+				colHeights[i]=0;
+			}
+		
+			for(let i=0;i<this.imgs.length;i++){
+				//1）、先计算img的定位（left和top）
+				//1.1)、求每一列高度的最小值的列号（列的下标）
+				let minIndex = getMinIndex(colHeights);
+				//1.2）、计算left和top。
+			    let left = minIndex*(this.imgWidth+40);//最小列的下标乘以每个图片的宽度	,+20是为了图片之间有缝隙
+				let top = colHeights[minIndex];//根据最小列下标获得最小列的高度。
+				let divObj = $(this.boxId+" div:eq("+i+")");
+				//改变div的left和top定位
+				divObj.css({"left":left+"px","top":top+"px"});
+				console.log(divObj.height());
+				//3)、改变当前列的高度
+				colHeights[minIndex] = colHeights[minIndex]+divObj.height()+30;
+			}
+			
+		}
+		
+		
+		//200,250,0,0,0,得到最小高的下标
+		function getMinIndex(arr){
+			let minIndex = 0;//2
+			for(let i=1;i<arr.length;i++){
+				if(arr[i]<arr[minIndex]){
+					minIndex = i;
+				}
+			}
+			return minIndex;
+		}
+		
+		
+		$(function(){
+			let w = new WaterFall({
+				"boxId":"#box",
+				"imgBasePath":"img/",
+				"impExtend":".jpg",
+				"imgs":["1","2","3","4","5","6","7","8","9","10","1","2","3","4","5","6","7","8","9","10"],				
+				"imgWidth":200				
+			});
+			
+			//页面打开时界面还没有图片，所以无法获取图片的高，需要进行一下操作
+			let timer = setInterval(function(){
+				let hasZero = false;//假设没有0。；
+				$("#box img").each(function(){
+					if($(this).height()==0){
+						hasZero = true;
+					}
+				});
+				
+				if(!hasZero){
+					w.setLeftTop();
+					clearInterval(timer);
+				}
+				
+			},10);
+			
+			
+		});
+	
+	</script>
+	<body>
+		
+		<div id="box">
+		</div>
+		
+	</body>
+</html>

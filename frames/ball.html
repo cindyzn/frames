@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			margin:0;
+			padding:0;
+			body{
+				width:100%;
+				height:100%;
+			}
+			
+		</style>
+	</head>
+	<body>
+		<p></p>
+	
+		<script>
+		var clientWidth;
+		var clientHeight ;
+		var scrollLeft ;
+		var scrollTop ;
+		//构造弹力球函数
+			function Ball(left,top,width,height,backgroundColor,incLeft,incTop,speed,border){
+				this.left = left;
+				this.top = top;
+				this.width = width;
+				this.height = height;
+				this.backgroundColor = backgroundColor;
+				this.incLeft = incLeft;
+				this.incTop = incTop;
+				this.timer = null;
+				this.speed = speed;
+				this.ballDiv = null;
+				this.border = border;
+				this.unit();
+				
+			}
+		//原型函数动态创建弹力球并出现在页面
+			Ball.prototype.unit = function(){
+				this. ballDiv = document.createElement("div");
+				
+				this.ballDiv.style.cssText = "position:absolute;left:"+this.left+"px;top:"+this.top+"px;width:"+
+									this.width+"px;height:"+this.height+"px;background:"+this.backgroundColor+";border-radius:50%;border:"+this.border;
+				document.body.appendChild(this.ballDiv);
+				
+			}
+		//可视区域
+		function loockArea(){
+			clientWidth = document.documentElement.clientWidth || document.body.clientWidth;
+			clientHeight = document.documentElement.clientHeight || document.body.clientHeight;
+			scrollLeft = document.documentElement.scrollLeft || document.body.scrollLeft;
+			scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+		}
+		//原型函数改变弹力球定位值，先走一步
+			Ball.prototype.go = function (){
+				this.left = this.left + this.incLeft;
+				this.top = this.top + this.incTop;
+				//考虑左右边界值
+				//下右有问题,因为边框
+				if(this.left + this.width - scrollLeft+12>= clientWidth){
+					this.incLeft = -1;
+				}else if(this.left - scrollLeft <=0){
+					this.incLeft = 1;
+				}
+				//考虑上下边界值
+				if(this.top + this.height - scrollTop+12>= clientHeight){
+					this.incTop= -1;
+				}else if(this.top - scrollTop <=0){
+					this.incTop = 1;
+				}
+				this.ballDiv.style.left = this.left + "px";
+				this.ballDiv.style.top = this.top + "px";
+			}
+		//设置定时器，一直走
+			Ball.prototype.goAway = function(){
+				var that = this;
+				this.timer = setInterval(function(){
+					that.go();
+				},this.speed)
+			}
+		//窗口变化、出现滚动条以及页面加载事件
+			document.body.onresize = loockArea;
+			document.body.onscroll =  loockArea;
+			window.onload = function(){
+				loockArea();
+				var b1 = new Ball(0,300,100,100,"white",1,1,30,"2px solid peru");
+				b1.goAway();
+				var b2 = new Ball(100,100,50,50,"white",-1,1,10,"2px solid yellowgreen");
+				b2.goAway();
+				var b3 = new Ball(60,100,20,20,"white",1,-1,20,"4px solid deeppink");
+				b3.goAway();
+				var b4 = new Ball(100,0,150,150,"white",-1,-1,60,"2px solid red");
+				b4.goAway();
+				
+				var b5 = new Ball(100,80,80,80,"white",1,-1,70,"2px solid green");
+				b5.goAway();
+				var b6 = new Ball(60,200,30,30,"white",1,1,50,"6px solid blue");
+				b6.goAway();
+			}
+		
+		</script>
+	</body>
+</html>

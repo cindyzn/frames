@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<style type="text/css">
+		
+		body{
+			height: 100%;
+			width: 100%;			
+		}
+	</style>
+	<body>
+	<div id="box1"></div>
+	<br />
+		<br />
+		<br />
+		<br />
+		<br />
+	<div id="box2"></div>
+		
+	</body>
+</html>
+
+<script type="text/javascript">
+	
+	//1、项目中的对象：轮播图
+//考虑都需要哪些对象
+	function AutoPlayerImgs(boxId,imgs,ur,width,height,btnWidth,btnHeight,speed,bgColor,lightColor,top,left){
+		//属性：
+		this.boxId = boxId;
+		//图片尺寸
+		this.width = width;
+		this.height = height;
+		//图片地址数组
+		this.imgs = imgs;
+		//点击图片跳转到相对应的链接
+		this.ur = ur;
+		//时间间隔
+		this.speed = speed;
+		this.timer = null;
+		//按钮尺寸
+		this.btnWidth = btnWidth ;
+		this.btnHeight = btnHeight;
+		//按钮颜色
+		this.bgColor = bgColor;
+		this.lightColor =lightColor;
+		this.index = 1;//当前播放到第几张
+		//按钮放置的位置（上右下左之一，取值为：top，right，bottom，left）
+		this.bottom = top;
+		this.left = left;
+		this.initUI();
+	}
+	
+	//页面初始创建元素
+	AutoPlayerImgs.prototype.initUI=function(){
+		//创建图片标签
+			var imgObj = document.createElement("img");
+			imgObj.id = this.boxId +"img";
+			imgObj.src = this.imgs[0];
+			imgObj.style.cssText = "width:"+this.width+"px;height:"+this.height+"px;";
+			var that = this;
+		//鼠标放到图片以及移开的效果
+			imgObj.onmouseover = function(){
+				that.stopGo();
+			};
+			imgObj.onmouseout = function(){
+				that.startGo();
+			}
+			var oBox = document.getElementById(this.boxId);
+			oBox.style.width = this.width + "px";
+			oBox.style.height = this.height + "px";
+			oBox.appendChild(imgObj);
+		//创建按钮图标
+			var oBtn = document.createElement("div");
+			oBtn.id = this.boxId +"btn";
+			oBtn.style.cssText = "position:absolute;bottom:"+this.bottom+"px;left:"+this.left+"px;";
+			var marginLeft = 20;//按钮之间的距离
+			//循环图片地址所在数组的长度
+			for(var i = 0;i<this.imgs.length;i++){
+				var oa = document.createElement("a");
+				oa.ord = i+1;
+				oa.style.cssText = "width:"+this.btnWidth+"px;height:"+this.btnHeight+"px;background-color:"+this.bgColor+";display:inline-block;margin-left: "+marginLeft+"px;border-radius:50%;";
+				var that = this;
+				//鼠标放到按钮上事件
+				oa.onmouseover = function(){
+					that.goImg(this.ord);
+				}
+					oBtn.appendChild(oa);
+			}
+			oBox.appendChild(oBtn);
+			//默认第一个按钮为高亮颜色
+			oBtn.children[0].style.backgroundColor =this.lightColor;
+	}
+		
+	
+	//图片先变化的第一步
+	AutoPlayerImgs.prototype.goStep = function(){
+		this.index++;
+		if(this.index>this.imgs.length){
+			this.index = 1;
+		}
+		this.showImg();
+	}
+	//图片自动轮播
+	AutoPlayerImgs.prototype.startGo = function(){
+		var that = this;
+		this.timer = setInterval(function(){
+			that.goStep();
+		},
+		this.speed
+		);
+	}
+	//图片停止轮播
+	AutoPlayerImgs.prototype.stopGo = function(){	
+		window.clearInterval(this.timer);
+		
+	}
+//封装鼠标放到按钮上切换图片的函数
+	AutoPlayerImgs.prototype.goImg = function(index){
+		this.index = index;
+		window.clearInterval(this.timer);
+		this.showImg();
+	}
+//改变图片的src来改变图片实现轮播，页面只有一个img
+	AutoPlayerImgs.prototype.showImg = function(){
+		document.getElementById(this.boxId+"img").src = this.imgs[this.index-1];
+		document.getElementById(this.boxId+"img").title = this.ur[this.index-1];
+	//点击图片跳转到相对应的地址
+		var that = this;
+		document.getElementById(this.boxId+"img").onclick = function(){
+			location = that.ur[that.index-1];
+		}
+		//改变按钮的颜色；
+		for(var i=0;i<document.getElementById(this.boxId+"btn").children.length;i++){
+			document.getElementById(this.boxId+"btn").children[i].style.backgroundColor = this.bgColor;
+		}
+		document.getElementById(this.boxId+"btn").children[this.index-1].style.backgroundColor = this.lightColor;
+	}
+
+
+	window.onload =function(){	
+		var scrollOne = new AutoPlayerImgs("box1",
+											["images/a.jpg","images/b.jpg","images/c.jpg","images/d.jpg","images/e.jpg"],
+											["http://www.baidu.com","http://www.taobao.com","http://www.jd.cn","http://www.sohu.com","http://www.mobiletrain.org"],
+											780,330,40,40,1000,"pink","red",360,190);
+		
+		scrollOne.startGo();
+		
+		var scrollTwo = new AutoPlayerImgs("box2",["images/a.jpg","images/b.jpg","images/c.jpg","images/d.jpg","images/e.jpg"],
+											["http://www.baidu.com","http://www.taobao.com","http://www.jd.cn","http://www.sohu.com","http://www.mobiletrain.org"],
+											280,200,20,20,2000,"white","green",50,20);
+		
+		scrollTwo.startGo();
+		
+		
+		
+	}
+
+
+	
+	
+</script>

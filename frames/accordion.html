@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			*{
+				margin: 0px;
+				padding: 0px;	
+			}
+			
+		</style>
+	</head>
+	<script type="text/javascript" src="jquery/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="jquery/Accordion.js"></script>
+	<script type="text/javascript">
+		
+		$(function(){
+			new Accordion({
+				boxId:"#box1",
+				"width":"400",
+				"height":"200",
+				"speed":"1000",
+				"count":"5",
+				"titles":["红玫瑰","粉玫瑰","白玫瑰","蓝玫瑰","黑玫瑰"],
+				"titleBgs":["img/title1.png","img/title2.png","img/title3.png","img/title4.png","img/title5.png"],
+				"imgs":["img/1a.jpg","img/2a.jpg","img/3a.jpg","img/4a.jpg","img/5a.jpg"],
+				"titleWidth":"40"
+			});
+			
+			new Accordion({
+				boxId:"#box2",
+				"width":"600",
+				"height":"200",
+				"speed":"1000",
+				"count":"3",
+				"titles":["红玫瑰","粉玫瑰","白玫瑰"],
+				"titleBgs":["img/title1.png","img/title2.png","img/title3.png"],
+				"imgs":["img/1a.jpg","img/2a.jpg","img/3a.jpg"],
+				"titleWidth":"40"
+			});
+			
+			
+			new Accordion({
+				boxId:"#box3",
+				"width":"500",
+				"height":"200",
+				"speed":"1000",
+				"count":"4",
+				"titles":["红玫瑰","粉玫瑰","白玫瑰","蓝玫瑰"],
+				"titleBgs":["img/title1.png","img/title2.png","img/title3.png","img/title4.png"],
+				"imgs":["img/1a.jpg","img/2a.jpg","img/3a.jpg","img/4a.jpg"],
+				"titleWidth":"40"
+			});
+		});
+		
+	</script>
+	<body>
+		<div id="box1" style="width: 400px;height: 200px;">
+			
+		</div>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<div id="box2" style="width: 600px;height: 200px;">
+			
+		</div>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<div id="box3" style="width: 500px;height: 200px;">
+			
+		</div>
+	</body>
+</html>

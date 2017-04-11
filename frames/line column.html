@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>chart</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        #box {
+            margin: 100px auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!--
+        画图表的一个插件
+     -->
+
+    <div id="box"></div>
+
+
+    <script src="chart.js"></script>
+    <script>
+
+        new Chart('#box', {
+            width: 500,
+            height: 500,
+            type: 'column',  // 柱状图 column  折线图 line  饼图 pie
+            data: [
+                {num: 200, title: '抽烟', color: 'red'},
+                {num: 680, title: '吃饭', color: 'lightgreen'},
+                {num: 100, title: '上网', color: 'orange'},
+                {num: 400, title: '喝酒', color: 'skyblue'},
+                {num: 150, title: '谈朋友', color: 'yellowgreen'}
+            ]
+        })
+
+    </script>
+
+</body>
+</html>

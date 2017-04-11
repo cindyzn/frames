@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			*{
+				margin:0;
+				padding:0;
+			}
+			ul,li{
+				list-style: none;
+			}
+			#box{
+				
+			}
+			#box1{
+				width:300px;
+				height:100px;
+				margin:50px 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="box"></div>
+		<div id="box1"></div>
+		<script src="move和透明度封装函数.js"></script>
+		<script>
+			function getId(str){
+				return document.getElementById(str);
+			}
+			function create(str){
+				return document.createElement(str);
+			}
+			
+			
+			//创建自动轮播特有属性
+			function Autoplay(boxId,width,height,imgs,ur,btn,top,left,speed){
+				this.width = width;
+				this.height = height;
+				//图片地址数组
+				this.imgs = imgs;
+				//图片跳转地址
+				this.ur = ur;
+				this.btn = btn;
+				this.boxId = boxId;
+				//按钮位置
+				this.top = top;
+				this.left = left;
+				//当前播放图片张数
+				this.index = 1;
+				//时间间隔
+				this.speed = speed;
+				this.unit();
+			}
+			
+			
+			
+			
+			//页面动态创建对象
+			Autoplay.prototype.unit = function(){
+				//获取容器
+				var boxObj = getId(this.boxId);
+				boxObj.style.cssText = "width:"+this.width+"px;height:"+this.height+"px;position: relative;overflow: hidden;";
+				
+				//鼠标放到容器上以及移开事件
+				var that = this;
+				boxObj.onmouseover = function(){
+					that.stopGo();
+				}
+				
+				boxObj.onmouseout = function(){
+					that.startGo();
+				}
+				
+				//创建图片li
+				var ulObj = create("ul");
+				ulObj.style.cssText = "width:9999px;height:100%;position:absolute;left:0;";
+				for(var i = 0;i<this.imgs.length;i++){
+					var liObj = create("li");
+					liObj.style.cssText = "width:"+this.width+"px;height:"+this.height+"px;float:left;";
+					var imgObj = create("img");
+					imgObj.style.cssText = "width:"+this.width+"px;height:"+this.height+"px;"
+					imgObj.src= this.imgs[i];
+					imgObj.title= this.ur[i];
+					
+					//点击li，跳转到相对应的链接
+					liObj.ord = i;
+					var that = this;			
+					liObj.onclick = function(){
+						location.href = that.ur[this.ord];
+					}
+					
+					liObj.appendChild(imgObj);
+					ulObj.appendChild(liObj);
+				}
+				getId(this.boxId).appendChild(ulObj);
+				
+			//创建btn
+				var btnObj = create("div");
+				btnObj.style.cssText = "position:absolute;left:"+this.left+"px;top:"+this.top+"px;";
+				for(var i = 0;i< this.imgs.length-1;i++){
+					var spanObj = create("span");
+					spanObj.style.cssText = "display:inline-block;width:"+this.btn.width+"px;height:"+
+											this.btn.height+"px;border-radius:50%;margin-right:10px;background:"+this.btn.bgcolor;
+					spanObj.order = i;
+					var that = this;
+					spanObj.onmouseover = function(){
+						that.goImg(this.order+1);	
+					};
+					btnObj.appendChild(spanObj);
+				}
+				//默认第一个按钮为高亮颜色
+				btnObj.children[this.index-1].style.backgroundColor = this.btn.lightColor;
+				getId(this.boxId).appendChild(btnObj);
+			
+			
+			//创建右按钮
+				var nextObj = create("a");
+				var that = this;
+				that.index = 0;
+					nextObj.onclick = function(){
+					that.index%=(that.imgs.length-1);
+					that.index++;
+					that.goImg(that.index+1);
+				}
+				nextObj.style.cssText = "cursor:pointer ;font-size:60px;text-align:center;line-height:60px;width:60px;height:60px;background:gray;position:absolute;top:"+(this.height-80)/2+"px;right:0";
+				nextObj.innerHTML = "&gt;";
+				getId(this.boxId).appendChild(nextObj);
+				
+			//创建左按钮
+				var prvObj = create("a");
+				var that = this;
+				that.index = that.imgs.length-1;
+					prvObj.onclick = function(){
+					if(that.index == 0){
+						that.index = that.imgs.length-1;
+					}
+					that.index--;
+					console.log(that.index);
+					that.goImg(that.index+1);
+				}
+				prvObj.style.cssText = "cursor:pointer ;font-size:60px;text-align:center;line-height:60px;width:60px;height:60px;background:gray;position:absolute;top:"+(this.height-80)/2+"px;left:0";
+				prvObj.innerHTML = "&lt;";
+				getId(this.boxId).appendChild(prvObj);
+				
+			}
+			
+			
+		
+		//先走一步
+			Autoplay.prototype.goStep = function(){
+				var ulObj = getId(this.boxId).getElementsByTagName("ul")[0];
+				this.index++;//2,3,4,5,6,1
+				if(this.index==this.imgs.length+1){
+					this.index = 1;
+					ulObj.style.left = "0"
+				}
+				var boxObj = document.getElementById(this.boxId);
+				var btnObj = boxObj.getElementsByTagName("div")[0]; 
+				//变换按钮的颜色
+				for(var i = 0;i<btnObj.children.length;i++){
+					btnObj.children[i].style.backgroundColor = this.btn.bgcolor;
+				}
+				btnObj.children[(this.index-1)%(btnObj.children.length)].style.backgroundColor = this.btn.lightColor;
+				var temp = (-1)*(this.index-1)*this.width;
+				move(ulObj,{"left":temp});
+			}
+			
+			
+		//一直走，图片自动轮播
+			Autoplay.prototype.startGo = function(){
+				var that = this;
+				this.timer = setInterval(function(){
+					that.goStep()},
+					this.speed);
+			}
+			
+			
+		//图片停止轮播
+		Autoplay.prototype.stopGo = function(){
+			clearInterval(this.timer);
+		}
+			
+		//封装图片变换及按钮背景图片函数
+		Autoplay.prototype.goImg=function(order){
+			var boxObj = document.getElementById(this.boxId);
+			var imgObj = boxObj.getElementsByTagName("ul")[0];
+			var btnObj = boxObj.getElementsByTagName("div")[0];
+			move(imgObj,{"left":(-1)*(order-1)*this.width});
+			this.index = order-1;
+			for(let i=0;i<btnObj.children.length;i++){
+				btnObj.children[i].style.backgroundColor = this.btn.bgcolor;
+			}
+			btnObj.children[this.index%(btnObj.children.length)].style.backgroundColor = this.btn.lightColor;
+		}
+			
+	//逻辑部分
+			
+		window.onload = function(){
+			var img = new Autoplay("box",
+									560,
+									300,
+									["images/a.jpg","images/b.jpg","images/c.jpg","images/d.jpg","images/e.jpg","images/a.jpg"],
+									["http://www.baidu.com","http://www.taobao.com","http://www.jd.cn","http://www.sohu.com","http://www.mobiletrain.org"],
+									{width:40,height:40,bgcolor:"red",lightColor:"green"},250,80,1000
+								);
+			img.startGo();
+			
+			
+			
+		
+		}
+		</script>
+	</body>
+</html>
